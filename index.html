@@ -3,48 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara UK Foods - AI Automation Dashboard</title>
+    <title>Sahara UK Foods - Dashboard</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .header { background: #003366; color: white; padding: 20px; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; }
+        .header { background: #003366; color: white; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-title { font-size: 22px; font-weight: bold; }
+        .sub-title { font-size: 13px; color: #ddd; }
         .card { background: white; padding: 20px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .status-badge { background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; }
+        .status-badge { background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        select, button { padding: 8px 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
+        .btn-primary { background: #003366; color: white; border: none; cursor: pointer; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #003366; color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
     </style>
 </head>
 <body>
     <div class="header">
-        Sahara UK Foods Ltd - Order & Sample Automation Dashboard
+        <div>
+            <div class="logo-title">Sahara UK Foods Ltd</div>
+            <div class="sub-title">Eat Sahara Live Healthy • Bulk Nuts & Dried Fruits Operations</div>
+        </div>
+        <div>
+            <span class="status-badge">Live AI Agent Connected</span>
+        </div>
     </div>
+
     <div class="card">
-        <h3>System Status: <span class="status-badge">24/7 Cloud Worker Active</span></h3>
-        <p>Email Parsing Engine and Supabase Real-Time Sync operating normally via GitHub Actions.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>Active Lead / Receiver:</h3>
+            <select id="activeUser">
+                <option value="Ali">Ali (UK/NI Logistics Admin)</option>
+                <option value="Hassan">Hassan (Director)</option>
+                <option value="Naveed">Naveed (Director)</option>
+                <option value="Kamran">Kamran (General Manager)</option>
+                <option value="Terry">Terry (Operations Lead)</option>
+                <option value="Kulsoom">Kulsoom (Estonia Logistics)</option>
+            </select>
+        </div>
     </div>
+
     <div class="card">
-        <h3>Live Activity Log</h3>
+        <h3>Simulate / Log Received Order (Naveed, Hassan, Kamran & Team)</h3>
+        <p>Agar koi order direct receive ho, toh yahan enter karein taake workflow trigger ho jaye:</p>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <input type="text" id="orderRef" placeholder="PO # or Client Name" style="flex: 2; padding: 8px;">
+            <select id="orderType" style="flex: 1;">
+                <option value="BULK_PO">Bulk Sales Order</option>
+                <option value="SAMPLE">Sample Dispatch</option>
+            </select>
+            <button class="btn-primary" onclick="triggerWorkflow()">Trigger Workflow</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Live Activity & Order Log</h3>
         <table>
             <thead>
                 <tr>
                     <th>Timestamp</th>
                     <th>Type</th>
-                    <th>Assigned Lead</th>
-                    <th>Region</th>
+                    <th>Received By / Lead</th>
+                    <th>Reference</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody id="data-table">
+            <tbody id="logTable">
                 <tr>
-                    <td>System Ready</td>
-                    <td>BULK_PO / SAMPLE</td>
-                    <td>Ali / Kulsoom / Terry / Ghazanfar</td>
-                    <td>UK / EU</td>
-                    <td>Listening...</td>
+                    <td>Just Now</td>
+                    <td>BULK_PO</td>
+                    <td>Ali (UK/NI)</td>
+                    <td>Initial System Ready</td>
+                    <td><span style="color: green; font-weight: bold;">Synced</span></td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <script>
+        function triggerWorkflow() {
+            const user = document.getElementById('activeUser').value;
+            const ref = document.getElementById('orderRef').value || 'Direct-PO-001';
+            const type = document.getElementById('orderType').value;
+            const table = document.getElementById('logTable');
+            
+            const row = `<tr>
+                <td>Just Now</td>
+                <td>${type}</td>
+                <td>${user}</td>
+                <td>${ref}</td>
+                <td><span style="color: orange; font-weight: bold;">Workflow Triggered</span></td>
+            </tr>`;
+            table.innerHTML = row + table.innerHTML;
+            alert('Order successfully logged by ' + user + '! Workflow triggered.');
+            document.getElementById('orderRef').value = '';
+        }
+    </script>
 </body>
 </html>
