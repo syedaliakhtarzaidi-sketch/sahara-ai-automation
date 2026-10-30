@@ -1,158 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara UK Foods - Order & Operations Dashboard</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .header { background: #002B49; color: white; padding: 15px 25px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .logo-container { display: flex; align-items: center; gap: 15px; }
-        .logo-badge { background: #82B215; color: white; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; }
-        .logo-title { font-size: 24px; font-weight: bold; margin: 0; }
-        .sub-title { font-size: 13px; color: #b0c4de; margin-top: 3px; }
-        .card { background: white; padding: 22px; margin-top: 20px; border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
-        .status-badge { background: #28a745; color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
-        input, select, button { padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; width: 100%; }
-        input:focus, select:focus { border-color: #002B49; outline: none; }
-        .btn-submit { background: #82B215; color: white; border: none; font-weight: bold; cursor: pointer; grid-column: span 1; transition: 0.2s; }
-        .btn-submit:hover { background: #6f9910; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 13px; }
-        th { background-color: #002B49; color: white; }
-        tr:nth-child(even) { background-color: #f8fafc; }
-    </style>
-</head>
-<body>
+from http.server import BaseHTTPRequestHandler
+import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import os
 
-    <!-- Header with Sahara UK Logo -->
-    <div class="header">
-        <div class="logo-container">
-            <div class="logo-badge">S</div>
-            <div>
-                <div class="logo-title">Sahara <span style="color: #82B215;">UK</span> Foods</div>
-                <div class="sub-title">Eat Sahara Live Healthy • Bulk Nuts & Dried Fruits Operations</div>
-            </div>
-        </div>
-        <div>
-            <span class="status-badge">● Live AI Agent Connected</span>
-        </div>
-    </div>
+# Outlook SMTP Details
+SMTP_SERVER = "smtp.office365.com"
+SMTP_PORT = 587
+SENDER_EMAIL = os.environ.get("OUTLOOK_EMAIL")      # e.g., logistics@saharaukfoods.co.uk
+SENDER_PASSWORD = os.environ.get("OUTLOOK_PASSWORD") # App Password or Account Password
 
-    <!-- Active User Selector -->
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <h3 style="margin: 0; color: #002B49;">Active Receiver / Team Lead:</h3>
-            <select id="activeUser" style="width: auto; font-weight: bold; min-width: 280px;">
-                <option value="Ali (UK/NI Logistics Admin)">Ali (UK/NI Logistics Admin)</option>
-                <option value="Hassan (Director)">Hassan (Director)</option>
-                <option value="Naveed (Director)">Naveed (Director)</option>
-                <option value="Kamran (General Manager)">Kamran (General Manager)</option>
-                <option value="Roya">Roya</option>
-                <option value="Kulsoom (Estonia Logistics)">Kulsoom (Estonia Logistics)</option>
-                <option value="Ashir">Ashir</option>
-                <option value="Mustafa">Mustafa</option>
-                <option value="Ghazanfar">Ghazanfar</option>
-                <option value="Terry (Operations Lead)">Terry (Operations Lead)</option>
-            </select>
-        </div>
-    </div>
+class handler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        data = json.loads(post_data.decode('utf-8'))
 
-    <!-- Order Entry Form for Team -->
-    <div class="card">
-        <h3 style="margin-top: 0; color: #002B49;">Log Direct Received Order & Send Email</h3>
-        <p style="font-size: 13px; color: #666;">Enter order details received by team members to trigger automated workflow & dispatch email notification:</p>
+        # Prepare Branded HTML Email Template
+        subject = f"NEW ORDER LOGGED: {data['type']} - {data['client']} ({data['po']})"
         
-        <div class="form-grid">
-            <input type="text" id="clientName" placeholder="Client Name (e.g., Al-Madina Stores)" required>
-            <input type="text" id="poRef" placeholder="PO Ref / Order #" required>
-            <input type="text" id="productName" placeholder="Product Name (e.g., Iranian Dates / Nuts)" required>
-            <input type="text" id="quantity" placeholder="Quantity (e.g., 20 MT / 500 Cartons)" required>
-            <input type="text" id="coo" placeholder="Country of Origin (COO)" required>
-            <input type="text" id="price" placeholder="Price (e.g., £1,200/MT)" required>
-            <select id="orderType">
-                <option value="BULK_PO">Bulk Sales Order</option>
-                <option value="SAMPLE">Sample Dispatch</option>
-            </select>
-            <button class="btn-submit" onclick="submitOrder()">Submit & Send Email Notification</button>
-        </div>
-    </div>
-
-    <!-- Live Activity Log Table -->
-    <div class="card">
-        <h3 style="margin-top: 0; color: #002B49;">Live Orders & Activity Log</h3>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Type</th>
-                        <th>Logged By</th>
-                        <th>Client</th>
-                        <th>PO Ref</th>
-                        <th>Product Name</th>
-                        <th>Qty</th>
-                        <th>COO</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="logTable">
-                    <tr>
-                        <td>System Ready</td>
-                        <td>BULK_PO</td>
-                        <td>Ali (Logistics)</td>
-                        <td>Sample Client</td>
-                        <td>PO-2026-001</td>
-                        <td>Zahedi Dates</td>
-                        <td>10 MT</td>
-                        <td>Iran</td>
-                        <td>£1,100 / MT</td>
-                        <td><span style="color: green; font-weight: bold;">Synced</span></td>
-                    </tr>
-                </tbody>
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; color: #333;">
+            <div style="background-color: #002B49; padding: 15px; color: white; border-radius: 6px;">
+                <h2>Sahara UK Foods - New Order Notification</h2>
+            </div>
+            <p>A new order has been submitted via the Operations Dashboard:</p>
+            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; border-color: #ddd;">
+                <tr><th align="left" style="background: #f4f4f4;">Logged By</th><td>{data['user']}</td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">Order Type</th><td>{data['type']}</td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">Client Name</th><td><strong>{data['client']}</strong></td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">PO Ref / Order #</th><td>{data['po']}</td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">Product Name</th><td>{data['product']}</td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">Quantity</th><td>{data['qty']}</td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">Country of Origin (COO)</th><td>{data['coo']}</td></tr>
+                <tr><th align="left" style="background: #f4f4f4;">Price</th><td>{data['price']}</td></tr>
             </table>
-        </div>
-    </div>
+            <p style="font-size: 12px; color: #777; margin-top: 20px;">Automated notification sent via Sahara UK Foods Logistics Operations System.</p>
+        </body>
+        </html>
+        """
 
-    <script>
-        async function submitOrder() {
-            const user = document.getElementById('activeUser').value;
-            const client = document.getElementById('clientName').value || 'N/A';
-            const po = document.getElementById('poRef').value || 'N/A';
-            const product = document.getElementById('productName').value || 'N/A';
-            const qty = document.getElementById('quantity').value || 'N/A';
-            const coo = document.getElementById('coo').value || 'N/A';
-            const price = document.getElementById('price').value || 'N/A';
-            const type = document.getElementById('orderType').value;
-            const table = document.getElementById('logTable');
-            
-            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const newRow = `<tr>
-                <td>${now}</td>
-                <td>${type}</td>
-                <td>${user}</td>
-                <td><strong>${client}</strong></td>
-                <td>${po}</td>
-                <td>${product}</td>
-                <td>${qty}</td>
-                <td>${coo}</td>
-                <td>${price}</td>
-                <td><span style="color: orange; font-weight: bold;">Email Trigger Sent</span></td>
-            </tr>`;
-            
-            table.innerHTML = newRow + table.innerHTML;
-            alert('Order logged! Email dispatch request sent to backend.');
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = SENDER_EMAIL
+            msg["To"] = "team@saharaukfoods.co.uk"  # Receiver team email address
 
-            document.getElementById('clientName').value = '';
-            document.getElementById('poRef').value = '';
-            document.getElementById('productName').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('coo').value = '';
-            document.getElementById('price').value = '';
-        }
-    </script>
-</body>
-</html>
+            msg.attach(MIMEText(html_body, "html"))
+
+            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, msg["To"], msg.as_string())
+            server.quit()
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "success", "message": "Email sent"}).encode('utf-8'))
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode('utf-8'))
