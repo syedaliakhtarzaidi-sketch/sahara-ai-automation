@@ -45,15 +45,16 @@
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <h3 style="margin: 0; color: #002B49;">Active Receiver / Team Lead:</h3>
             <select id="activeUser" style="width: auto; font-weight: bold; min-width: 280px;">
-                <option value="Ali (Logistics Admin)">Ali (UK/NI Logistics Admin)</option>
+                <option value="Ali (UK/NI Logistics Admin)">Ali (UK/NI Logistics Admin)</option>
                 <option value="Hassan (Director)">Hassan (Director)</option>
                 <option value="Naveed (Director)">Naveed (Director)</option>
-                <option value="Kamran (GM)">Kamran (General Manager)</option>
+                <option value="Kamran (General Manager)">Kamran (General Manager)</option>
                 <option value="Roya">Roya</option>
-                <option value="Kulsoom (Estonia)">Kulsoom (Estonia Logistics)</option>
+                <option value="Kulsoom (Estonia Logistics)">Kulsoom (Estonia Logistics)</option>
                 <option value="Ashir">Ashir</option>
                 <option value="Mustafa">Mustafa</option>
-                <option value="Terry (Operations)">Terry (Operations Lead)</option>
+                <option value="Ghazanfar">Ghazanfar</option>
+                <option value="Terry (Operations Lead)">Terry (Operations Lead)</option>
             </select>
         </div>
     </div>
@@ -129,7 +130,6 @@
             
             const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            // Add entry to UI
             const newRow = `<tr>
                 <td>${now}</td>
                 <td>${type}</td>
@@ -146,7 +146,6 @@
             table.innerHTML = newRow + table.innerHTML;
             alert('Order logged! Email dispatch request sent to backend.');
 
-            // Clear input fields
             document.getElementById('clientName').value = '';
             document.getElementById('poRef').value = '';
             document.getElementById('productName').value = '';
