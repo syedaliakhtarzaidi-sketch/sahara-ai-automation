@@ -3,100 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara UK Foods - Dashboard</title>
+    <title>Sahara UK Foods - Order & Operations Dashboard</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .header { background: #003366; color: white; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .logo-title { font-size: 22px; font-weight: bold; }
-        .sub-title { font-size: 13px; color: #ddd; }
-        .card { background: white; padding: 20px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .status-badge { background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
-        select, button { padding: 8px 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
-        .btn-primary { background: #003366; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .header { background: #002B49; color: white; padding: 15px 25px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .logo-badge { background: #82B215; color: white; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; }
+        .logo-title { font-size: 24px; font-weight: bold; margin: 0; }
+        .sub-title { font-size: 13px; color: #b0c4de; margin-top: 3px; }
+        .card { background: white; padding: 22px; margin-top: 20px; border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
+        .status-badge { background: #28a745; color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
+        input, select, button { padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; width: 100%; }
+        input:focus, select:focus { border-color: #002B49; outline: none; }
+        .btn-submit { background: #82B215; color: white; border: none; font-weight: bold; cursor: pointer; grid-column: span 1; transition: 0.2s; }
+        .btn-submit:hover { background: #6f9910; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #003366; color: white; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 13px; }
+        th { background-color: #002B49; color: white; }
+        tr:nth-child(even) { background-color: #f8fafc; }
     </style>
 </head>
 <body>
+
+    <!-- Header with Sahara UK Logo -->
     <div class="header">
-        <div>
-            <div class="logo-title">Sahara UK Foods Ltd</div>
-            <div class="sub-title">Eat Sahara Live Healthy • Bulk Nuts & Dried Fruits Operations</div>
+        <div class="logo-container">
+            <div class="logo-badge">S</div>
+            <div>
+                <div class="logo-title">Sahara <span style="color: #82B215;">UK</span> Foods</div>
+                <div class="sub-title">Eat Sahara Live Healthy • Bulk Nuts & Dried Fruits Operations</div>
+            </div>
         </div>
         <div>
-            <span class="status-badge">Live AI Agent Connected</span>
+            <span class="status-badge">● Live AI Agent Connected</span>
         </div>
     </div>
 
+    <!-- Active User Selector -->
     <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>Active Lead / Receiver:</h3>
-            <select id="activeUser">
-                <option value="Ali">Ali (UK/NI Logistics Admin)</option>
-                <option value="Hassan">Hassan (Director)</option>
-                <option value="Naveed">Naveed (Director)</option>
-                <option value="Kamran">Kamran (General Manager)</option>
-                <option value="Terry">Terry (Operations Lead)</option>
-                <option value="Kulsoom">Kulsoom (Estonia Logistics)</option>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <h3 style="margin: 0; color: #002B49;">Active Receiver / Team Lead:</h3>
+            <select id="activeUser" style="width: auto; font-weight: bold; min-width: 280px;">
+                <option value="Ali (Logistics Admin)">Ali (UK/NI Logistics Admin)</option>
+                <option value="Hassan (Director)">Hassan (Director)</option>
+                <option value="Naveed (Director)">Naveed (Director)</option>
+                <option value="Kamran (GM)">Kamran (General Manager)</option>
+                <option value="Roya">Roya</option>
+                <option value="Kulsoom (Estonia)">Kulsoom (Estonia Logistics)</option>
+                <option value="Ashir">Ashir</option>
+                <option value="Mustafa">Mustafa</option>
+                <option value="Terry (Operations)">Terry (Operations Lead)</option>
             </select>
         </div>
     </div>
 
+    <!-- Order Entry Form for Team -->
     <div class="card">
-        <h3>Simulate / Log Received Order (Naveed, Hassan, Kamran & Team)</h3>
-        <p>Agar koi order direct receive ho, toh yahan enter karein taake workflow trigger ho jaye:</p>
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <input type="text" id="orderRef" placeholder="PO # or Client Name" style="flex: 2; padding: 8px;">
-            <select id="orderType" style="flex: 1;">
+        <h3 style="margin-top: 0; color: #002B49;">Log Direct Received Order (Manual / Email Entry)</h3>
+        <p style="font-size: 13px; color: #666;">Enter order details received by Hassan, Naveed, Kamran, Roya, Kulsoom, Ashir, Mustafa, or Ali to trigger automated workflow:</p>
+        
+        <div class="form-grid">
+            <input type="text" id="clientName" placeholder="Client Name (e.g., Al-Madina Stores)" required>
+            <input type="text" id="poRef" placeholder="PO Ref / Order #" required>
+            <input type="text" id="productName" placeholder="Product Name (e.g., Iranian Dates / Nuts)" required>
+            <input type="text" id="quantity" placeholder="Quantity (e.g., 20 MT / 500 Cartons)" required>
+            <input type="text" id="coo" placeholder="Country of Origin (COO)" required>
+            <input type="text" id="price" placeholder="Price (e.g., £1,200/MT)" required>
+            <select id="orderType">
                 <option value="BULK_PO">Bulk Sales Order</option>
                 <option value="SAMPLE">Sample Dispatch</option>
             </select>
-            <button class="btn-primary" onclick="triggerWorkflow()">Trigger Workflow</button>
+            <button class="btn-submit" onclick="submitOrder()">Submit & Trigger Workflow</button>
         </div>
     </div>
 
+    <!-- Live Activity Log Table -->
     <div class="card">
-        <h3>Live Activity & Order Log</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Type</th>
-                    <th>Received By / Lead</th>
-                    <th>Reference</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="logTable">
-                <tr>
-                    <td>Just Now</td>
-                    <td>BULK_PO</td>
-                    <td>Ali (UK/NI)</td>
-                    <td>Initial System Ready</td>
-                    <td><span style="color: green; font-weight: bold;">Synced</span></td>
-                </tr>
-            </tbody>
-        </table>
+        <h3 style="margin-top: 0; color: #002B49;">Live Orders & Activity Log</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Type</th>
+                        <th>Logged By</th>
+                        <th>Client</th>
+                        <th>PO Ref</th>
+                        <th>Product Name</th>
+                        <th>Qty</th>
+                        <th>COO</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="logTable">
+                    <tr>
+                        <td>System Ready</td>
+                        <td>BULK_PO</td>
+                        <td>Ali (Logistics)</td>
+                        <td>Sample Client</td>
+                        <td>PO-2026-001</td>
+                        <td>Zahedi Dates</td>
+                        <td>10 MT</td>
+                        <td>Iran</td>
+                        <td>£1,100 / MT</td>
+                        <td><span style="color: green; font-weight: bold;">Synced</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        function triggerWorkflow() {
+        function submitOrder() {
             const user = document.getElementById('activeUser').value;
-            const ref = document.getElementById('orderRef').value || 'Direct-PO-001';
+            const client = document.getElementById('clientName').value || 'N/A';
+            const po = document.getElementById('poRef').value || 'N/A';
+            const product = document.getElementById('productName').value || 'N/A';
+            const qty = document.getElementById('quantity').value || 'N/A';
+            const coo = document.getElementById('coo').value || 'N/A';
+            const price = document.getElementById('price').value || 'N/A';
             const type = document.getElementById('orderType').value;
             const table = document.getElementById('logTable');
             
-            const row = `<tr>
-                <td>Just Now</td>
+            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const newRow = `<tr>
+                <td>${now}</td>
                 <td>${type}</td>
                 <td>${user}</td>
-                <td>${ref}</td>
+                <td><strong>${client}</strong></td>
+                <td>${po}</td>
+                <td>${product}</td>
+                <td>${qty}</td>
+                <td>${coo}</td>
+                <td>${price}</td>
                 <td><span style="color: orange; font-weight: bold;">Workflow Triggered</span></td>
             </tr>`;
-            table.innerHTML = row + table.innerHTML;
+            
+            table.innerHTML = newRow + table.innerHTML;
             alert('Order successfully logged by ' + user + '! Workflow triggered.');
-            document.getElementById('orderRef').value = '';
+
+            // Clear input fields
+            document.getElementById('clientName').value = '';
+            document.getElementById('poRef').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('coo').value = '';
+            document.getElementById('price').value = '';
         }
     </script>
 </body>
