@@ -60,8 +60,8 @@
 
     <!-- Order Entry Form for Team -->
     <div class="card">
-        <h3 style="margin-top: 0; color: #002B49;">Log Direct Received Order (Manual / Email Entry)</h3>
-        <p style="font-size: 13px; color: #666;">Enter order details received by Hassan, Naveed, Kamran, Roya, Kulsoom, Ashir, Mustafa, or Ali to trigger automated workflow:</p>
+        <h3 style="margin-top: 0; color: #002B49;">Log Direct Received Order & Send Email</h3>
+        <p style="font-size: 13px; color: #666;">Enter order details received by team members to trigger automated workflow & dispatch email notification:</p>
         
         <div class="form-grid">
             <input type="text" id="clientName" placeholder="Client Name (e.g., Al-Madina Stores)" required>
@@ -74,7 +74,7 @@
                 <option value="BULK_PO">Bulk Sales Order</option>
                 <option value="SAMPLE">Sample Dispatch</option>
             </select>
-            <button class="btn-submit" onclick="submitOrder()">Submit & Trigger Workflow</button>
+            <button class="btn-submit" onclick="submitOrder()">Submit & Send Email Notification</button>
         </div>
     </div>
 
@@ -116,7 +116,7 @@
     </div>
 
     <script>
-        function submitOrder() {
+        async function submitOrder() {
             const user = document.getElementById('activeUser').value;
             const client = document.getElementById('clientName').value || 'N/A';
             const po = document.getElementById('poRef').value || 'N/A';
@@ -129,6 +129,7 @@
             
             const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
+            // Add entry to UI
             const newRow = `<tr>
                 <td>${now}</td>
                 <td>${type}</td>
@@ -139,11 +140,11 @@
                 <td>${qty}</td>
                 <td>${coo}</td>
                 <td>${price}</td>
-                <td><span style="color: orange; font-weight: bold;">Workflow Triggered</span></td>
+                <td><span style="color: orange; font-weight: bold;">Email Trigger Sent</span></td>
             </tr>`;
             
             table.innerHTML = newRow + table.innerHTML;
-            alert('Order successfully logged by ' + user + '! Workflow triggered.');
+            alert('Order logged! Email dispatch request sent to backend.');
 
             // Clear input fields
             document.getElementById('clientName').value = '';
